@@ -3,6 +3,7 @@
 This repository contains selected engineering, mechatronics, instrumentation, CAD, research, programming, and data science projects completed during my undergraduate mechanical engineering training.
 
 The goal of this portfolio is to document my hands-on engineering experience across design, fabrication, testing, programming, analysis, and technical communication.
+**missing sldparts files, attempting to recover files and other lost media
 
 ## Featured Projects
 
