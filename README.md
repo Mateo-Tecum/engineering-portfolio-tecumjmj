@@ -1,9 +1,9 @@
 # Engineering Portfolio
 
-This repository contains selected engineering, mechatronics, instrumentation, CAD, research, programming, and data science projects completed during my undergraduate mechanical engineering training.
+This repository contains my engineering, mechatronics, instrumentation, CAD, research, programming, and data science projects completed during my undergraduate mechanical engineering training.
 
 The goal of this portfolio is to document my hands-on engineering experience across design, fabrication, testing, programming, analysis, and technical communication.
-**missing sldparts files, attempting to recover files and other lost media
+
 
 ## Featured Projects
 
@@ -20,7 +20,7 @@ Sensor-based step counter developed using accelerometer data and instrumentation
 ### 3. Research Tools for iPSC Lab Work
 Technical support and prototyping for NIH-funded research involving iPSC workflows, microinjector support, and 3D-printed equipment tooling.
 
-**Skills:** research tooling, CAD, 3D printing, lab equipment, technical documentation
+**Skills:** research tooling, FIJI, CAD, 3D printing, lab equipment, technical documentation
 
 ### 4. Welded Truss Structural Analysis
 Designed, fabricated, and analyzed a welded truss structure, including stress calculations and structural performance evaluation.
