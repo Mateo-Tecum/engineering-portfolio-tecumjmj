@@ -1,0 +1,94 @@
+import matplotlib.pyplot as plt
+import math
+
+# -----------------------------------
+# AIRCRAFT DESIGN INPUTS
+# -----------------------------------
+
+mass = 2.0                 # kg
+gravity = 9.81             # m/s^2
+
+wing_area = 0.38           # m^2
+wingspan = 1.5             # m
+
+cruise_speed = 15.0        # m/s
+air_density = 1.225        # kg/m^3 at sea level
+
+CL_max = 1.2               # estimated maximum lift coefficient
+
+
+# -----------------------------------
+# BASIC CALCULATIONS
+# -----------------------------------
+
+weight = mass * gravity
+
+aspect_ratio = wingspan**2 / wing_area
+
+wing_loading = weight / wing_area
+
+
+# -----------------------------------
+# REQUIRED LIFT COEFFICIENT AT CRUISE
+# -----------------------------------
+
+CL_cruise = (2 * weight) / (
+    air_density * cruise_speed**2 * wing_area
+)
+
+
+# -----------------------------------
+# STALL SPEED
+# -----------------------------------
+
+stall_speed = math.sqrt(
+    (2 * weight) /
+    (air_density * wing_area * CL_max)
+)
+
+
+# -----------------------------------
+# RESULTS
+# -----------------------------------
+
+print("\nAIRCRAFT DESIGN RESULTS")
+print("--------------------------")
+
+print(f"Mass: {mass:.2f} kg")
+print(f"Weight: {weight:.2f} N")
+
+print(f"Wing Area: {wing_area:.3f} m^2")
+print(f"Wingspan: {wingspan:.2f} m")
+
+print(f"Aspect Ratio: {aspect_ratio:.2f}")
+print(f"Wing Loading: {wing_loading:.2f} N/m^2")
+
+print("\nFLIGHT PERFORMANCE")
+print("--------------------------")
+
+print(f"Cruise Speed: {cruise_speed:.2f} m/s")
+print(f"Required CL at Cruise: {CL_cruise:.3f}")
+print(f"Estimated Stall Speed: {stall_speed:.2f} m/s")
+wing_areas = []
+stall_speeds = []
+
+for area in [0.20, 0.25, 0.30, 0.35, 0.40, 0.45, 0.50, 0.55, 0.60]:
+
+    Vs = math.sqrt(
+        (2 * weight) /
+        (air_density * area * CL_max)
+    )
+
+    wing_areas.append(area)
+    stall_speeds.append(Vs)
+
+
+plt.plot(wing_areas, stall_speeds, marker="o")
+
+plt.xlabel("Wing Area (m²)")
+plt.ylabel("Stall Speed (m/s)")
+plt.title("Effect of Wing Area on Stall Speed")
+
+plt.grid()
+
+plt.show()

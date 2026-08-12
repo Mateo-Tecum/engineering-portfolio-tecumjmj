@@ -1,0 +1,362 @@
+import math
+import numpy as np
+import matplotlib.pyplot as plt
+
+
+# ==========================================================
+# 1. DESIGN REQUIREMENTS
+# ==========================================================
+
+mass = 2.0                 # kg
+gravity = 9.81             # m/s^2
+
+cruise_speed = 15.0        # m/s
+target_stall_speed = 8.0   # m/s
+
+wingspan = 1.50            # m
+wing_area = 0.42           # m^2
+
+CL_max = 1.20
+
+# Atmospheric properties at approximately sea level
+air_density = 1.225        # kg/m^3
+dynamic_viscosity = 1.81e-5  # Pa*s
+
+
+# ==========================================================
+# 2. BASIC AIRCRAFT GEOMETRY
+# ==========================================================
+
+weight = mass * gravity
+
+aspect_ratio = wingspan**2 / wing_area
+
+wing_loading = weight / wing_area
+
+# For now we assume a rectangular wing
+mean_chord = wing_area / wingspan
+
+
+# ==========================================================
+# 3. LIFT CALCULATIONS
+# ==========================================================
+
+CL_cruise = (
+    2 * weight
+    / (air_density * cruise_speed**2 * wing_area)
+)
+
+stall_speed = math.sqrt(
+    2 * weight
+    / (air_density * wing_area * CL_max)
+)
+
+
+# ==========================================================
+# 4. REYNOLDS NUMBER
+# ==========================================================
+
+reynolds_number = (
+    air_density
+    * cruise_speed
+    * mean_chord
+    / dynamic_viscosity
+)
+
+
+# ==========================================================
+# 5. SIMPLE DRAG MODEL
+# ==========================================================
+
+# Very rough first estimate of zero-lift drag coefficient
+CD0 = 0.030
+
+# Oswald efficiency factor
+e = 0.80
+
+# Induced drag factor
+k = 1 / (math.pi * e * aspect_ratio)
+
+# Induced drag coefficient
+CD_induced = k * CL_cruise**2
+
+# Total estimated drag coefficient
+CD_total = CD0 + CD_induced
+
+
+# ==========================================================
+# 6. DRAG FORCE
+# ==========================================================
+
+dynamic_pressure = (
+    0.5
+    * air_density
+    * cruise_speed**2
+)
+
+drag_force = (
+    dynamic_pressure
+    * wing_area
+    * CD_total
+)
+
+
+# ==========================================================
+# 7. LIFT TO DRAG RATIO
+# ==========================================================
+
+lift_to_drag = CL_cruise / CD_total
+
+
+# ==========================================================
+# 8. POWER REQUIRED
+# ==========================================================
+
+power_required = drag_force * cruise_speed
+
+
+# ==========================================================
+# 9. PRINT RESULTS
+# ==========================================================
+
+print()
+print("======================================")
+print("      AIRCRAFT DESIGN MODEL V1")
+print("======================================")
+
+print("\nDESIGN")
+print("--------------------------------------")
+
+print(f"Mass:                 {mass:.2f} kg")
+print(f"Weight:               {weight:.2f} N")
+print(f"Wingspan:             {wingspan:.2f} m")
+print(f"Wing area:            {wing_area:.3f} m^2")
+print(f"Mean chord:           {mean_chord:.3f} m")
+print(f"Aspect ratio:         {aspect_ratio:.2f}")
+print(f"Wing loading:         {wing_loading:.2f} N/m^2")
+
+print("\nFLIGHT CONDITION")
+print("--------------------------------------")
+
+print(f"Cruise speed:         {cruise_speed:.2f} m/s")
+print(f"Air density:          {air_density:.3f} kg/m^3")
+print(f"Reynolds number:      {reynolds_number:,.0f}")
+
+print("\nAERODYNAMIC PERFORMANCE")
+print("--------------------------------------")
+
+print(f"Required cruise CL:   {CL_cruise:.3f}")
+print(f"Assumed CL max:       {CL_max:.3f}")
+print(f"Predicted stall speed:{stall_speed:.2f} m/s")
+
+print(f"CD0:                   {CD0:.4f}")
+print(f"Induced CD:            {CD_induced:.4f}")
+print(f"Total CD:              {CD_total:.4f}")
+
+print(f"Lift/Drag ratio:       {lift_to_drag:.2f}")
+print(f"Drag force:            {drag_force:.2f} N")
+print(f"Power required:        {power_required:.2f} W")
+
+
+# ==========================================================
+# 10. DESIGN REQUIREMENT CHECK
+# ==========================================================
+
+print("\nDESIGN REQUIREMENTS")
+print("--------------------------------------")
+
+if stall_speed <= target_stall_speed:
+    print("PASS: Stall speed requirement")
+else:
+    print("FAIL: Stall speed requirement")
+
+if wingspan <= 1.5:
+    print("PASS: Wingspan requirement")
+else:
+    print("FAIL: Wingspan requirement")
+
+
+# ==========================================================
+# 11. WING AREA PARAMETER STUDY
+# ==========================================================
+
+wing_areas = np.linspace(0.20, 0.60, 50)
+
+stall_speeds = []
+
+for area in wing_areas:
+
+    Vs = math.sqrt(
+        2 * weight
+        / (
+            air_density
+            * area
+            * CL_max
+        )
+    )
+
+    stall_speeds.append(Vs)
+
+
+plt.figure()
+
+plt.plot(
+    wing_areas,
+    stall_speeds
+)
+
+plt.axhline(
+    y=target_stall_speed,
+    linestyle="--",
+    label="Target Stall Speed"
+)
+
+plt.xlabel("Wing Area (m²)")
+plt.ylabel("Stall Speed (m/s)")
+
+plt.title(
+    "Effect of Wing Area on Stall Speed"
+)
+
+plt.grid()
+
+plt.legend()
+
+plt.show()
+
+
+# ==========================================================
+# 12. SPEED STUDY
+# ==========================================================
+
+speeds = np.linspace(
+    8,
+    25,
+    100
+)
+
+required_CL = []
+
+drag_values = []
+
+power_values = []
+
+
+for speed in speeds:
+
+    CL = (
+        2 * weight
+        / (
+            air_density
+            * speed**2
+            * wing_area
+        )
+    )
+
+    CD_ind = (
+        k
+        * CL**2
+    )
+
+    CD = (
+        CD0
+        + CD_ind
+    )
+
+    q = (
+        0.5
+        * air_density
+        * speed**2
+    )
+
+    D = (
+        q
+        * wing_area
+        * CD
+    )
+
+    P = (
+        D
+        * speed
+    )
+
+    required_CL.append(CL)
+    drag_values.append(D)
+    power_values.append(P)
+
+
+# ==========================================================
+# 13. CL VS SPEED GRAPH
+# ==========================================================
+
+plt.figure()
+
+plt.plot(
+    speeds,
+    required_CL
+)
+
+plt.axhline(
+    y=CL_max,
+    linestyle="--",
+    label="CL Max"
+)
+
+plt.xlabel("Airspeed (m/s)")
+plt.ylabel("Required Lift Coefficient")
+
+plt.title(
+    "Required Lift Coefficient vs Airspeed"
+)
+
+plt.grid()
+
+plt.legend()
+
+plt.show()
+
+
+# ==========================================================
+# 14. DRAG VS SPEED GRAPH
+# ==========================================================
+
+plt.figure()
+
+plt.plot(
+    speeds,
+    drag_values
+)
+
+plt.xlabel("Airspeed (m/s)")
+plt.ylabel("Drag Force (N)")
+
+plt.title(
+    "Estimated Drag vs Airspeed"
+)
+
+plt.grid()
+
+plt.show()
+
+
+# ==========================================================
+# 15. POWER VS SPEED GRAPH
+# ==========================================================
+
+plt.figure()
+
+plt.plot(
+    speeds,
+    power_values
+)
+
+plt.xlabel("Airspeed (m/s)")
+plt.ylabel("Power Required (W)")
+
+plt.title(
+    "Estimated Power Required vs Airspeed"
+)
+
+plt.grid()
+
+plt.show()
